@@ -63,7 +63,8 @@ class Model(object):
 
 
 tf.reset_default_graph()
-MODEL_PATH = "weights/deeplab_v3_plus_mnv2_decoder_513.pb"
+#MODEL_PATH = "weights/deeplab_v3_plus_mnv2_decoder_513.pb"
+MODEL_PATH = "weights/frozen_model.pb"
 model = Model(model_filepath=MODEL_PATH)
 
 TEST_DIR = 'datasets/picsart/test/'
@@ -71,6 +72,7 @@ TEST_DIR = 'datasets/picsart/test/'
 
 RESULT_DIR = 'results/'
 INPUT_SIZE = 513
+#MEAN_UINT_PIXEL = [127.5, 127.5, 127.5]
 test_imgs = os.listdir(TEST_DIR)
 
 for i, img_path in enumerate(test_imgs):
@@ -82,6 +84,8 @@ for i, img_path in enumerate(test_imgs):
     test_img = test_img[:,:,::-1]
     test_img = cv2.resize(test_img, (INPUT_SIZE, INPUT_SIZE))
     test_img = test_img[np.newaxis, ...]
+
+    test_img = (2.0 / 255.0) * test_img - 1.0
 
     output = model.predict(test_img)[0]
     output = np.squeeze(output, axis=-1)
